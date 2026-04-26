@@ -149,6 +149,12 @@ export default function VolunteerDashboard() {
               {events.map((ev) => (
                 <div key={ev.id} className={ev.isLive ? '' : 'event-card-offline'} style={{ padding:'1rem', borderRadius:'var(--radius-sm)', border:'1px solid var(--border)', background:'var(--surface-2)', position: 'relative' }}>
                   
+                  {!ev.isLive && (
+                    <div className="event-card-offline-overlay">
+                      ⏳ Wait for the event to get live.
+                    </div>
+                  )}
+
                   {/* Header: Always visible */}
                   <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'0.5rem' }}>
                     <div>
@@ -162,12 +168,6 @@ export default function VolunteerDashboard() {
                       {ev.taskId ? 'Assigned' : 'Pending'}
                     </span>
                   </div>
-
-                  {!ev.isLive && (
-                    <div className="event-card-offline-overlay">
-                      ⏳ Wait for the event to get live.
-                    </div>
-                  )}
 
                   <div className={ev.isLive ? '' : 'card-content-faded'}>
                     <div style={{ fontSize:'0.8125rem', color:'var(--text-secondary)' }}>📅 {ev.date} at {ev.time}</div>
