@@ -57,6 +57,7 @@ const events = [
     date: '2026-05-15',
     time: '09:00',
     managerId: 'u1',
+    isLive: false,
     tasks: [
       {
         id: 't1',
@@ -95,6 +96,7 @@ const events = [
     date: '2026-06-01',
     time: '08:00',
     managerId: 'u1',
+    isLive: false,
     tasks: [
       {
         id: 't4',
@@ -161,6 +163,7 @@ const store = {
       date: data.date,
       time: data.time,
       managerId: data.managerId,
+      isLive: false,
       tasks: [],
       volunteers: [],
       createdAt: new Date().toISOString(),
