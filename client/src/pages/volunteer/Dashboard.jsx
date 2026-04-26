@@ -40,7 +40,7 @@ export default function VolunteerDashboard() {
   useEffect(() => { fetchMe(); }, []);
 
   useEffect(() => {
-    if (lastMessage?.type?.startsWith('VOLUNTEER')) fetchMe();
+    if (lastMessage?.type?.startsWith('VOLUNTEER') || lastMessage?.type === 'EVENT_LIVE_TOGGLED') fetchMe();
   }, [lastMessage]);
 
   const copyCode = () => {
