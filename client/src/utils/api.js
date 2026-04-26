@@ -4,9 +4,13 @@ const BASE = '/api';
 
 const api = axios.create({ baseURL: BASE });
 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('vg_token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+import { auth } from '../config/firebase';
+
+api.interceptors.request.use(async (config) => {
+  if (auth.currentUser) {
+    const token = await auth.currentUser.getIdToken();
+    config.headers.Authorization = `Bearer ${token}`;
+  }
   return config;
 });
 
@@ -14,9 +18,9 @@ api.interceptors.response.use(
   (r) => r,
   (err) => {
     if (err.response?.status === 401) {
-      localStorage.removeItem('vg_token');
-      localStorage.removeItem('vg_user');
-      window.location.href = '/login';
+      auth.signOut().then(() => {
+        window.location.href = '/login';
+      });
     }
     return Promise.reject(err);
   }
@@ -25,9 +29,7 @@ api.interceptors.response.use(
 // Auth
 export const login = (data) => api.post('/auth/login', data);
 export const signup = (data) => api.post('/auth/signup', data);
-
-// Volunteers
-export const getMe = () => api.get('/volunteers/me');
+export const getMe = () => api.get('/auth/me');
 export const getVolunteerByCode = (code) => api.get(`/volunteers/code/${code}`);
 export const updateMySkills = (skills) => api.put('/volunteers/me/skills', { skills });
 

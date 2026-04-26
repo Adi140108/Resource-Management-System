@@ -1,29 +1,46 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { auth } from '../config/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import { getMe } from '../utils/api';
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('vg_user')); } catch { return null; }
-  });
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const login = (userData, token) => {
-    localStorage.setItem('vg_token', token);
-    localStorage.setItem('vg_user', JSON.stringify(userData));
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        try {
+          const res = await getMe();
+          setUser(res.data);
+        } catch (error) {
+          console.error("Failed to fetch user profile", error);
+          setUser(null);
+        }
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  const login = (userData) => {
     setUser(userData);
   };
 
-  const logout = () => {
-    localStorage.removeItem('vg_token');
-    localStorage.removeItem('vg_user');
-    setUser(null);
+  const logout = async () => {
+    await auth.signOut();
   };
 
   const updateUser = (data) => {
-    const updated = { ...user, ...data };
-    localStorage.setItem('vg_user', JSON.stringify(updated));
-    setUser(updated);
+    setUser((prev) => ({ ...prev, ...data }));
   };
+
+  if (loading) return null; // Or a loading spinner
 
   return (
     <AuthContext.Provider value={{ user, login, logout, updateUser, isManager: user?.role === 'manager' }}>
