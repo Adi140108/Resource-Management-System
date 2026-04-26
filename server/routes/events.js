@@ -16,7 +16,21 @@ router.get('/', authenticate, (req, res) => {
   } else {
     events = store.getEventsByVolunteer(req.user.id);
   }
-  return res.json(events);
+
+  // Enrich events with volunteer details
+  const enrichedEvents = events.map(event => ({
+    ...event,
+    volunteers: event.volunteers.map(v => {
+      const user = store.getUserById(v.userId);
+      return {
+        ...v,
+        name: user ? user.name : 'Unknown',
+        email: user ? user.email : ''
+      };
+    })
+  }));
+
+  return res.json(enrichedEvents);
 });
 
 // POST /api/events

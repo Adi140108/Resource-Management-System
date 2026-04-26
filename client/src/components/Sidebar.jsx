@@ -12,7 +12,6 @@ const managerNav = [
 
 const volunteerNav = [
   { label: 'My Dashboard', to: '/volunteer', icon: Icons.Grid },
-  { label: 'My Events', to: '/volunteer/events', icon: Icons.Calendar },
 ];
 
 export default function Sidebar() {

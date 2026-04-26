@@ -9,7 +9,11 @@ export function SocketProvider({ children }) {
 
   useEffect(() => {
     function connect() {
-      const ws = new WebSocket('ws://localhost:5000');
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const isDev = window.location.hostname === 'localhost';
+      const url = isDev ? `${protocol}//localhost:5001` : `${protocol}//${window.location.host}`;
+      
+      const ws = new WebSocket(url);
       wsRef.current = ws;
 
       ws.onopen = () => setConnected(true);
