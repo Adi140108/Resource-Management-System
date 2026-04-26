@@ -32,6 +32,7 @@ async function authenticate(req, res, next) {
     }
     next();
   } catch (error) {
+    console.error('[AUTH ERROR]', error.message);
     return res.status(401).json({ error: 'Invalid token' });
   }
 }

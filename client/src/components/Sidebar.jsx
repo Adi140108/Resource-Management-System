@@ -45,9 +45,9 @@ export default function Sidebar() {
       <aside className={`sidebar ${open ? 'open' : ''}`}>
         {/* Logo */}
         <div className="sidebar-logo">
-          <div className="logo-icon">VG</div>
+          <div className="logo-icon">EVS</div>
           <div>
-            <div className="logo-text">Volunteer Grid</div>
+            <div className="logo-text">Event Volunteer System</div>
             <div className="logo-sub">{isManager ? '👑 Manager' : '👤 Volunteer'}</div>
           </div>
         </div>

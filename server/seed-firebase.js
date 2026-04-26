@@ -1,10 +1,10 @@
-const admin = require('./config/firebase-admin');
+const { admin } = require('./config/firebase-admin');
 
 const users = [
-  { email: 'manager@vg.com', password: 'password123', displayName: 'Manager' },
-  { email: 'jordan@vg.com', password: 'password123', displayName: 'Jordan' },
-  { email: 'sam@vg.com', password: 'password123', displayName: 'Sam' },
-  { email: 'riley@vg.com', password: 'password123', displayName: 'Riley' },
+  { email: 'manager@evs.com', password: 'password123', displayName: 'Manager' },
+  { email: 'jordan@evs.com', password: 'password123', displayName: 'Jordan' },
+  { email: 'sam@evs.com', password: 'password123', displayName: 'Sam' },
+  { email: 'riley@evs.com', password: 'password123', displayName: 'Riley' },
 ];
 
 async function seed() {

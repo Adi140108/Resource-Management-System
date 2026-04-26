@@ -42,7 +42,7 @@ const clients = new Set();
 wss.on('connection', (ws) => {
   clients.add(ws);
   console.log(`[WS] Client connected. Total: ${clients.size}`);
-  ws.send(JSON.stringify({ type: 'CONNECTED', payload: { message: 'Volunteer Grid real-time ready' } }));
+  ws.send(JSON.stringify({ type: 'CONNECTED', payload: { message: 'EVS real-time ready' } }));
 
   ws.on('close', () => {
     clients.delete(ws);
@@ -67,11 +67,11 @@ eventsRoutes.broadcast = broadcast;
 
 // ─── Start ─────────────────────────────────────────────────────────────────────
 server.listen(PORT, () => {
-  console.log(`\n🚀 Volunteer Grid API running on http://localhost:${PORT}`);
+  console.log(`\n🚀 EVS API running on http://localhost:${PORT}`);
   console.log(`🔌 WebSocket server ready on ws://localhost:${PORT}`);
   console.log('\n📋 Seed Accounts:');
-  console.log('  Manager : manager@vg.com / password123');
-  console.log('  Volunteer: jordan@vg.com / password123 (code: VG-4F8A2B)');
-  console.log('  Volunteer: sam@vg.com    / password123 (code: VG-9C3D7E)');
-  console.log('  Volunteer: riley@vg.com  / password123 (code: VG-1B5E3F)');
+  console.log('  Manager : manager@evs.com / password123');
+  console.log('  Volunteer: jordan@evs.com / password123 (code: EVS-4F8A2B)');
+  console.log('  Volunteer: sam@evs.com    / password123 (code: EVS-9C3D7E)');
+  console.log('  Volunteer: riley@evs.com  / password123 (code: EVS-1B5E3F)');
 });

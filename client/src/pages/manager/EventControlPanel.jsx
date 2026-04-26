@@ -75,7 +75,7 @@ function AddVolunteerModal({ eventId, event, onClose, onDone }) {
             <div className="form-group">
               <label className="form-label">Enter Volunteer Code</label>
               <div className="flex gap-2">
-                <input className="form-input" placeholder="VG-XXXXXX"
+                <input className="form-input" placeholder="EVS-XXXXXX"
                   value={code} onChange={e => setCode(e.target.value.toUpperCase())}
                   onKeyDown={e => e.key === 'Enter' && lookup()} style={{ flex:1 }} />
                 <button className="btn btn-primary" onClick={lookup} disabled={loading || !code}>

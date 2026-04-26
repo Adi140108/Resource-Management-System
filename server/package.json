@@ -1,7 +1,7 @@
 {
   "name": "volunteer-grid-server",
   "version": "1.0.0",
-  "description": "Volunteer Grid Backend",
+  "description": "EVS Backend",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",

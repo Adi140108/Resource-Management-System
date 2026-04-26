@@ -1,4 +1,4 @@
-# Volunteer Grid 🎯
+# EVS (Event Volunteer System) 🎯
 
 A smart, real-time volunteer resource allocation system — **no AI, pure rule-based logic**.
 
@@ -28,10 +28,10 @@ Open **http://localhost:5173**
 
 | Role | Email | Password | Volunteer Code |
 |------|-------|----------|---------------|
-| 👑 Manager | manager@vg.com | password123 | — |
-| 👤 Jordan | jordan@vg.com | password123 | VG-4F8A2B |
-| 👤 Sam | sam@vg.com | password123 | VG-9C3D7E |
-| 👤 Riley | riley@vg.com | password123 | VG-1B5E3F |
+| 👑 Manager | manager@evs.com | password123 | — |
+| 👤 Jordan | jordan@evs.com | password123 | EVS-4F8A2B |
+| 👤 Sam | sam@evs.com | password123 | EVS-9C3D7E |
+| 👤 Riley | riley@evs.com | password123 | EVS-1B5E3F |
 
 ---
 
@@ -76,7 +76,7 @@ Score = (SkillMatch × 5) + (Availability × 3) + (Distance × 2) + (Experience 
 - Live monitoring dashboard across all events
 
 ### Volunteer
-- Auto-generated unique code (VG-XXXXXX)
+- Auto-generated unique code (EVS-XXXXXX)
 - View assigned event + task
 - Edit skills profile
 - No-show tracking
