@@ -473,12 +473,14 @@ p { color: var(--text-secondary); }
 }
 .event-card-offline-overlay {
   position: absolute;
-  inset: 0;
-  background: rgba(248, 250, 252, 0.5);
-  backdrop-filter: blur(3px);
-  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
-  font-size: 1rem; font-weight: 700;
-  color: var(--text-secondary);
+  top: 0; left: 0; right: 0;
+  padding: 0.875rem 1rem;
+  background: rgba(241, 245, 249, 0.92);
+  backdrop-filter: blur(2px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 0.5rem;
+  font-size: 0.8125rem; font-weight: 600;
+  color: var(--danger);
   z-index: 2;
 }
 
