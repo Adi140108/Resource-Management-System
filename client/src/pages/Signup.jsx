@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
-import { signup as apiSignup } from '../utils/api';
+import { signup as apiSignup, getMe } from '../utils/api';
+import { auth, googleProvider } from '../config/firebase';
+import { createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 
 const ALL_SKILLS = ['first-aid','communication','logistics','tech-support','coordination','driving','cooking','photography','teaching','security'];
 
@@ -20,12 +22,36 @@ export default function Signup() {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await apiSignup(form);
-      login(res.data.user, res.data.token);
-      addToast(`Account created! Welcome, ${res.data.user.name}!`, 'success');
-      navigate(res.data.user.role === 'manager' ? '/manager' : '/volunteer');
+      await createUserWithEmailAndPassword(auth, form.email, form.password);
+      await apiSignup(form);
+      const res = await getMe();
+      login(res.data);
+      addToast(`Account created! Welcome, ${res.data.name}!`, 'success');
+      window.location.href = res.data.role === 'manager' ? '/manager' : '/volunteer';
     } catch (err) {
-      addToast(err.response?.data?.error || 'Signup failed', 'error');
+      addToast(err.message || 'Signup failed', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignUp = async () => {
+    setLoading(true);
+    try {
+      const userCred = await signInWithPopup(auth, googleProvider);
+      const name = userCred.user.displayName || form.name || userCred.user.email.split('@')[0];
+      await apiSignup({ ...form, name, email: userCred.user.email });
+      const res = await getMe();
+      login(res.data);
+      addToast(`Account created! Welcome, ${res.data.name}!`, 'success');
+      window.location.href = res.data.role === 'manager' ? '/manager' : '/volunteer';
+    } catch (err) {
+      if (err.response?.status === 409) {
+        addToast('An account already exists for this Google email. Please sign in.', 'error');
+        auth.signOut();
+      } else {
+        addToast(err.message || 'Google Sign-Up failed', 'error');
+      }
     } finally {
       setLoading(false);
     }
@@ -102,6 +128,23 @@ export default function Signup() {
 
           <button className="btn btn-primary btn-lg w-full" type="submit" disabled={loading} style={{ marginTop:'0.5rem' }}>
             {loading ? <span className="spinner" /> : 'Create Account'}
+          </button>
+          
+          <div style={{ display: 'flex', alignItems: 'center', margin: '0.5rem 0' }}>
+            <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--border)' }}></div>
+            <span style={{ padding: '0 1rem', color: 'var(--text-muted)', fontSize: '0.875rem' }}>or</span>
+            <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--border)' }}></div>
+          </div>
+
+          <button 
+            type="button" 
+            className="btn btn-secondary btn-lg w-full" 
+            disabled={loading} 
+            onClick={handleGoogleSignUp}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', backgroundColor: '#fff', color: '#333', border: '1px solid #ddd' }}
+          >
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style={{ width: '18px', height: '18px' }} />
+            Sign up with Google
           </button>
         </form>
 

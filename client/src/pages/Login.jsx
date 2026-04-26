@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
-import { login as apiLogin } from '../utils/api';
+import { getMe } from '../utils/api';
+import { auth, googleProvider } from '../config/firebase';
+import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -17,12 +19,33 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await apiLogin(form);
-      login(res.data.user, res.data.token);
-      addToast(`Welcome back, ${res.data.user.name}!`, 'success');
-      navigate(res.data.user.role === 'manager' ? '/manager' : '/volunteer');
+      await signInWithEmailAndPassword(auth, form.email, form.password);
+      const res = await getMe();
+      login(res.data);
+      addToast(`Welcome back, ${res.data.name}!`, 'success');
+      window.location.href = res.data.role === 'manager' ? '/manager' : '/volunteer';
     } catch (err) {
-      addToast(err.response?.data?.error || 'Login failed', 'error');
+      addToast(err.message || 'Login failed', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
+    try {
+      await signInWithPopup(auth, googleProvider);
+      const res = await getMe();
+      login(res.data);
+      addToast(`Welcome back, ${res.data.name}!`, 'success');
+      window.location.href = res.data.role === 'manager' ? '/manager' : '/volunteer';
+    } catch (err) {
+      if (err.response?.status === 404) {
+        addToast('No account found for this Google email. Please sign up.', 'error');
+        auth.signOut();
+      } else {
+        addToast(err.message || 'Google Sign-In failed', 'error');
+      }
     } finally {
       setLoading(false);
     }
@@ -82,6 +105,23 @@ export default function Login() {
 
           <button className="btn btn-primary btn-lg w-full" type="submit" disabled={loading}>
             {loading ? <span className="spinner" /> : 'Sign In'}
+          </button>
+          
+          <div style={{ display: 'flex', alignItems: 'center', margin: '1rem 0' }}>
+            <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--border)' }}></div>
+            <span style={{ padding: '0 1rem', color: 'var(--text-muted)', fontSize: '0.875rem' }}>or</span>
+            <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--border)' }}></div>
+          </div>
+
+          <button 
+            type="button" 
+            className="btn btn-secondary btn-lg w-full" 
+            disabled={loading} 
+            onClick={handleGoogleSignIn}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', backgroundColor: '#fff', color: '#333', border: '1px solid #ddd' }}
+          >
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style={{ width: '18px', height: '18px' }} />
+            Sign in with Google
           </button>
         </form>
 
