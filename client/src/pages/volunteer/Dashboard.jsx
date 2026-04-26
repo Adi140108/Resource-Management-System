@@ -148,24 +148,28 @@ export default function VolunteerDashboard() {
               )}
               {events.map((ev) => (
                 <div key={ev.id} className={ev.isLive ? '' : 'event-card-offline'} style={{ padding:'1rem', borderRadius:'var(--radius-sm)', border:'1px solid var(--border)', background:'var(--surface-2)', position: 'relative' }}>
+                  
+                  {/* Header: Always visible */}
+                  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'0.5rem' }}>
+                    <div>
+                      <div style={{ fontWeight:600, fontSize:'0.9375rem', color:'var(--text)' }}>{ev.name}</div>
+                      <div className={`live-badge ${ev.isLive ? 'live-badge-on' : 'live-badge-off'}`} style={{ marginTop: '0.25rem' }}>
+                        <div className="live-badge-dot" />
+                        {ev.isLive ? 'Live' : 'Offline'}
+                      </div>
+                    </div>
+                    <span className={`badge ${ev.taskId ? 'badge-green' : 'badge-yellow'}`}>
+                      {ev.taskId ? 'Assigned' : 'Pending'}
+                    </span>
+                  </div>
+
                   {!ev.isLive && (
                     <div className="event-card-offline-overlay">
                       ⏳ Wait for the event to get live.
                     </div>
                   )}
+
                   <div className={ev.isLive ? '' : 'card-content-faded'}>
-                    <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'0.5rem' }}>
-                      <div>
-                        <div style={{ fontWeight:600, fontSize:'0.9375rem', color:'var(--text)' }}>{ev.name}</div>
-                        <div className={`live-badge ${ev.isLive ? 'live-badge-on' : 'live-badge-off'}`} style={{ marginTop: '0.25rem' }}>
-                          <div className="live-badge-dot" />
-                          {ev.isLive ? 'Live' : 'Offline'}
-                        </div>
-                      </div>
-                      <span className={`badge ${ev.taskId ? 'badge-green' : 'badge-yellow'}`}>
-                        {ev.taskId ? 'Assigned' : 'Pending'}
-                      </span>
-                    </div>
                     <div style={{ fontSize:'0.8125rem', color:'var(--text-secondary)' }}>📅 {ev.date} at {ev.time}</div>
                     {ev.taskName && (
                       <div style={{ marginTop:'0.5rem', display:'flex', alignItems:'center', gap:'0.5rem' }}>

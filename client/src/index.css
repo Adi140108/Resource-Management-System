@@ -472,15 +472,15 @@ p { color: var(--text-secondary); }
   filter: grayscale(0.6);
 }
 .event-card-offline-overlay {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  padding: 0.875rem 1rem;
-  background: rgba(241, 245, 249, 0.92);
-  backdrop-filter: blur(2px);
+  margin: 0.5rem -1rem 0.5rem -1rem;
+  padding: 0.625rem 1rem;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   display: flex; align-items: center; gap: 0.5rem;
   font-size: 0.8125rem; font-weight: 600;
   color: var(--danger);
+  position: relative;
   z-index: 2;
 }
 
