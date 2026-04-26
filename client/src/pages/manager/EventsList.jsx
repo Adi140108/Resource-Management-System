@@ -21,8 +21,7 @@ export default function EventsList() {
 
   return (
     <AppLayout>
-      <Topbar title="All Events" subtitle="Manage your volunteer events"
-        actions={<button className="btn btn-primary btn-sm" onClick={() => navigate('/manager/events/new')}><Icons.Plus /> New Event</button>} />
+      <Topbar title="All Events" subtitle="Manage your volunteer events" />
       <div className="page-content">
         {loading ? (
           <div style={{ display:'flex', flexDirection:'column', gap:'0.75rem' }}>

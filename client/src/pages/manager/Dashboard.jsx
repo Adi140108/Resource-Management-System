@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSocket } from '../../context/SocketContext';
 import { useToast } from '../../context/ToastContext';
-import { getEvents, deleteEvent } from '../../utils/api';
+import { getEvents, deleteEvent, toggleEventLive } from '../../utils/api';
 import AppLayout from '../../components/AppLayout';
 import Topbar from '../../components/Topbar';
 import { Icons } from '../../components/Icons';
@@ -13,7 +13,7 @@ function fillPercent(event) {
   return total === 0 ? 0 : Math.round((filled / total) * 100);
 }
 
-function EventCard({ event, onOpen, onDelete }) {
+function EventCard({ event, onOpen, onDelete, onToggleLive }) {
   const pct = fillPercent(event);
   const tasksFull = event.tasks.filter((t) => t.assignedVolunteers.length >= t.requiredCount).length;
   const statusColor = pct === 100 ? 'var(--success)' : pct > 0 ? 'var(--warning)' : 'var(--danger)';
@@ -21,6 +21,23 @@ function EventCard({ event, onOpen, onDelete }) {
   return (
     <div className="card" style={{ cursor:'pointer' }} onClick={() => onOpen(event.id)}>
       <div className="card-body">
+        {/* Live indicator + toggle */}
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'0.75rem' }}>
+          <div className={`live-badge ${event.isLive ? 'live-badge-on' : 'live-badge-off'}`}>
+            <div className="live-badge-dot" />
+            {event.isLive ? 'Live' : 'Offline'}
+          </div>
+          <label className="toggle-switch" onClick={(e) => e.stopPropagation()}>
+            <input
+              type="checkbox"
+              checked={event.isLive || false}
+              onChange={(e) => { e.stopPropagation(); onToggleLive(event.id); }}
+            />
+            <div className="toggle-track" />
+            <div className="toggle-knob" />
+          </label>
+        </div>
+
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'1rem' }}>
           <div>
             <h3 style={{ marginBottom:'0.25rem', color:'var(--text)' }}>{event.name}</h3>
@@ -87,7 +104,7 @@ export default function ManagerDashboard() {
   useEffect(() => { fetchEvents(); }, []);
 
   useEffect(() => {
-    if (lastMessage?.type === 'EVENT_CREATED' || lastMessage?.type === 'EVENT_DELETED' || lastMessage?.type === 'VOLUNTEER_ADDED' || lastMessage?.type === 'VOLUNTEER_REMOVED') {
+    if (lastMessage?.type === 'EVENT_CREATED' || lastMessage?.type === 'EVENT_DELETED' || lastMessage?.type === 'VOLUNTEER_ADDED' || lastMessage?.type === 'VOLUNTEER_REMOVED' || lastMessage?.type === 'EVENT_LIVE_TOGGLED') {
       fetchEvents();
     }
   }, [lastMessage]);
@@ -101,6 +118,14 @@ export default function ManagerDashboard() {
     } catch { addToast('Failed to delete event', 'error'); }
   };
 
+  const handleToggleLive = async (eventId) => {
+    try {
+      const r = await toggleEventLive(eventId);
+      addToast(r.data.isLive ? 'Event is now Live!' : 'Event is now Offline', r.data.isLive ? 'success' : 'info');
+      fetchEvents();
+    } catch { addToast('Failed to toggle live status', 'error'); }
+  };
+
   const totalVolunteers = [...new Set(events.flatMap((e) => e.volunteers.map((v) => v.userId)))].length;
   const totalTasks = events.reduce((s, e) => s + e.tasks.length, 0);
   const fullEvents = events.filter((e) => fillPercent(e) === 100).length;
@@ -110,11 +135,6 @@ export default function ManagerDashboard() {
       <Topbar
         title="Manager Dashboard"
         subtitle="Overview of all events and volunteer allocation"
-        actions={
-          <button className="btn btn-primary btn-sm" onClick={() => navigate('/manager/events/new')}>
-            <Icons.Plus /> New Event
-          </button>
-        }
       />
       <div className="page-content">
 
@@ -167,6 +187,7 @@ export default function ManagerDashboard() {
                 event={ev}
                 onOpen={(id) => navigate(`/manager/events/${id}`)}
                 onDelete={(ev) => setDeleteTarget(ev)}
+                onToggleLive={handleToggleLive}
               />
             ))}
           </div>

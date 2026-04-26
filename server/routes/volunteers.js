@@ -19,6 +19,7 @@ router.get('/me', authenticate, (req, res) => {
       description: event.description,
       date: event.date,
       time: event.time,
+      isLive: event.isLive || false,
       taskId: vol ? vol.taskId : null,
       taskName: task ? task.name : null,
       attendance: vol ? vol.attendance : null,

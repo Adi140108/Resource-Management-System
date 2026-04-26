@@ -86,6 +86,16 @@ router.delete('/:id', authenticate, requireManager, (req, res) => {
   return res.json({ success: true });
 });
 
+// PATCH /api/events/:id/toggle-live
+router.patch('/:id/toggle-live', authenticate, requireManager, (req, res) => {
+  const event = store.getEventById(req.params.id);
+  if (!event) return res.status(404).json({ error: 'Event not found' });
+  if (event.managerId !== req.user.id) return res.status(403).json({ error: 'Forbidden' });
+  event.isLive = !event.isLive;
+  router.broadcast({ type: 'EVENT_LIVE_TOGGLED', payload: { id: event.id, isLive: event.isLive } });
+  return res.json({ id: event.id, isLive: event.isLive });
+});
+
 // ─── Tasks ───────────────────────────────────────────────────────────────────
 
 // POST /api/events/:id/tasks
