@@ -62,10 +62,10 @@ export default function Signup() {
       <div className="auth-card" style={{ maxWidth: 520 }}>
         <div className="auth-header">
           <div className="auth-logo">
-            <span style={{ color:'#fff', fontWeight:800, fontSize:'1.25rem' }}>EVS</span>
+            <img src="/logo.png" alt="EVS Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           </div>
           <h1 style={{ fontSize:'1.75rem' }}>Create account</h1>
-          <p style={{ marginTop:'0.5rem' }}>Join Event Volunteer System</p>
+          <p style={{ marginTop:'0.5rem' }}>Join as a new volunteer</p>
         </div>
 
         <form onSubmit={handleSubmit} style={{ display:'flex', flexDirection:'column', gap:'1rem' }}>

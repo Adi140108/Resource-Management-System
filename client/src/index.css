@@ -280,10 +280,9 @@ p { color: var(--text-secondary); }
   border-bottom: 1px solid var(--border);
 }
 .sidebar-logo .logo-icon {
-  width: 36px; height: 36px; border-radius: 10px;
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  width: 48px; height: 48px; border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
-  color: white; font-weight: 800; font-size: 1rem;
+  color: var(--primary); font-weight: 800; font-size: 1rem;
 }
 .sidebar-logo .logo-text { font-weight: 700; font-size: 1rem; color: var(--text); }
 .sidebar-logo .logo-sub { font-size: 0.7rem; color: var(--text-muted); margin-top: 1px; }
@@ -383,11 +382,9 @@ p { color: var(--text-secondary); }
 }
 .auth-header { text-align: center; margin-bottom: 2rem; }
 .auth-logo {
-  width: 56px; height: 56px; border-radius: 16px;
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  width: 100%; max-width: 240px; height: 120px;
   display: flex; align-items: center; justify-content: center;
   margin: 0 auto 1rem;
-  box-shadow: var(--shadow-blue);
 }
 
 /* ─── Priority Dots ──────────────────────────────────────────────────────────── */

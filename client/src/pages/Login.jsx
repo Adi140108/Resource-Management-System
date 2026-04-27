@@ -56,10 +56,10 @@ export default function Login() {
         {/* Header */}
         <div className="auth-header">
           <div className="auth-logo">
-            <span style={{ color:'#fff', fontWeight:800, fontSize:'1.25rem' }}>EVS</span>
+            <img src="/logo.png" alt="EVS Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           </div>
           <h1 style={{ fontSize:'1.75rem' }}>Welcome back</h1>
-          <p style={{ marginTop:'0.5rem' }}>Sign in to Event Volunteer System</p>
+          <p style={{ marginTop:'0.5rem' }}>Sign in to continue</p>
         </div>
 
 

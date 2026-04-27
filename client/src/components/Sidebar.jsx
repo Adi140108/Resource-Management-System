@@ -44,11 +44,12 @@ export default function Sidebar() {
 
       <aside className={`sidebar ${open ? 'open' : ''}`}>
         {/* Logo */}
-        <div className="sidebar-logo">
-          <div className="logo-icon">EVS</div>
-          <div>
-            <div className="logo-text">Event Volunteer System</div>
-            <div className="logo-sub">{isManager ? '👑 Manager' : '👤 Volunteer'}</div>
+        <div className="sidebar-logo" style={{ flexDirection: 'column', alignItems: 'center', padding: '1.5rem 1rem' }}>
+          <div className="logo-icon" style={{ width: '100%', height: '100px' }}>
+            <img src="/logo.png" alt="EVS Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+          </div>
+          <div className="logo-sub" style={{ marginTop: '0.5rem', fontWeight: 600 }}>
+            {isManager ? '👑 Manager' : '👤 Volunteer'}
           </div>
         </div>
 
