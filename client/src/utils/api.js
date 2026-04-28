@@ -189,38 +189,41 @@ export const addVolunteerToEvent = async (eventId, data) => {
   if (!eventDoc.exists()) throw new Error('Event not found');
   
   const eventData = eventDoc.data();
-  if (eventData.volunteers.find(v => v.userId === userId)) {
+  const volunteers = eventData.volunteers || [];
+  const tasks = [...(eventData.tasks || [])];
+
+  if (volunteers.find(v => v.userId === userId)) {
     throw new Error('Volunteer already added to this event');
   }
 
   let finalTaskId = taskId;
-  const tasks = [...eventData.tasks];
 
   // Auto assignment logic
   if (autoAssign && !finalTaskId) {
     const userDoc = await getDoc(doc(db, 'users', userId));
     const user = userDoc.data();
-    
-    const ranked = tasks.map(t => {
-      let score = 0;
-      const match = t.requiredSkills.filter(s => (user.skills || []).includes(s)).length;
-      score += match * 10;
-      score += (5 - t.priority) * 2;
-      const isFull = t.assignedVolunteers.length >= t.requiredCount;
-      return { ...t, score, isFull };
-    })
-    .filter(t => !t.isFull)
-    .sort((a, b) => b.score - a.score);
+    if (user) {
+      const ranked = tasks.map(t => {
+        let score = 0;
+        const match = (t.requiredSkills || []).filter(s => (user.skills || []).includes(s)).length;
+        score += match * 10;
+        score += (5 - t.priority) * 2;
+        const isFull = (t.assignedVolunteers || []).length >= (t.requiredCount || 1);
+        return { ...t, score, isFull };
+      })
+      .filter(t => !t.isFull)
+      .sort((a, b) => b.score - a.score);
 
-    if (ranked.length > 0) {
-      finalTaskId = ranked[0].id;
+      if (ranked.length > 0) {
+        finalTaskId = ranked[0].id;
+      }
     }
   }
 
   const entry = { 
-    userId, 
-    name, 
-    email, 
+    userId: userId || '', 
+    name: name || 'Unknown', 
+    email: email || '', 
     taskId: finalTaskId || null, 
     attendance: null, 
     joinedAt: new Date().toISOString() 
@@ -229,6 +232,7 @@ export const addVolunteerToEvent = async (eventId, data) => {
   if (finalTaskId) {
     const taskIdx = tasks.findIndex(t => t.id === finalTaskId);
     if (taskIdx !== -1) {
+      if (!tasks[taskIdx].assignedVolunteers) tasks[taskIdx].assignedVolunteers = [];
       if (!tasks[taskIdx].assignedVolunteers.includes(userId)) {
         tasks[taskIdx].assignedVolunteers.push(userId);
       }
