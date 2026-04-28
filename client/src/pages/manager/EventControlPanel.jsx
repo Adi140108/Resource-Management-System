@@ -52,7 +52,9 @@ function AddVolunteerModal({ eventId, event, onClose, onDone }) {
     setLoading(true);
     try {
       await addVolunteerToEvent(eventId, {
-        volunteerCode: code.trim().toUpperCase(),
+        userId: vol.id,
+        name: vol.name,
+        email: vol.email,
         autoAssign: mode === 'auto',
         taskId: mode === 'manual' ? manualTask : undefined,
       });

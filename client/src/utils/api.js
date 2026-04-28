@@ -184,18 +184,54 @@ export const deleteTask = async (eventId, taskId) => {
 // ─── Volunteer Assignments ───────────────────────────────────────────────────
 
 export const addVolunteerToEvent = async (eventId, data) => {
-  const { userId, taskId } = data;
+  const { userId, name, email, taskId, autoAssign } = data;
   const eventDoc = await getDoc(doc(db, 'events', eventId));
+  if (!eventDoc.exists()) throw new Error('Event not found');
+  
   const eventData = eventDoc.data();
+  if (eventData.volunteers.find(v => v.userId === userId)) {
+    throw new Error('Volunteer already added to this event');
+  }
 
-  if (eventData.volunteers.find(v => v.userId === userId)) return null;
+  let finalTaskId = taskId;
+  const tasks = [...eventData.tasks];
 
-  const entry = { userId, taskId, attendance: null, joinedAt: new Date().toISOString() };
-  const tasks = eventData.tasks;
-  if (taskId) {
-    const task = tasks.find(t => t.id === taskId);
-    if (task && !task.assignedVolunteers.includes(userId)) {
-      task.assignedVolunteers.push(userId);
+  // Auto assignment logic
+  if (autoAssign && !finalTaskId) {
+    const userDoc = await getDoc(doc(db, 'users', userId));
+    const user = userDoc.data();
+    
+    const ranked = tasks.map(t => {
+      let score = 0;
+      const match = t.requiredSkills.filter(s => (user.skills || []).includes(s)).length;
+      score += match * 10;
+      score += (5 - t.priority) * 2;
+      const isFull = t.assignedVolunteers.length >= t.requiredCount;
+      return { ...t, score, isFull };
+    })
+    .filter(t => !t.isFull)
+    .sort((a, b) => b.score - a.score);
+
+    if (ranked.length > 0) {
+      finalTaskId = ranked[0].id;
+    }
+  }
+
+  const entry = { 
+    userId, 
+    name, 
+    email, 
+    taskId: finalTaskId || null, 
+    attendance: null, 
+    joinedAt: new Date().toISOString() 
+  };
+
+  if (finalTaskId) {
+    const taskIdx = tasks.findIndex(t => t.id === finalTaskId);
+    if (taskIdx !== -1) {
+      if (!tasks[taskIdx].assignedVolunteers.includes(userId)) {
+        tasks[taskIdx].assignedVolunteers.push(userId);
+      }
     }
   }
 
@@ -203,6 +239,7 @@ export const addVolunteerToEvent = async (eventId, data) => {
     volunteers: arrayUnion(entry),
     tasks
   });
+  
   return { data: entry };
 };
 
