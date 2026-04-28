@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSocket } from '../../context/SocketContext';
 import { useToast } from '../../context/ToastContext';
+import { useAuth } from '../../context/AuthContext';
 import { getEvents, deleteEvent, toggleEventLive } from '../../utils/api';
 import AppLayout from '../../components/AppLayout';
 import Topbar from '../../components/Topbar';
@@ -88,6 +89,7 @@ function EventCard({ event, onOpen, onDelete, onToggleLive }) {
 }
 
 export default function ManagerDashboard() {
+  const { user } = useAuth();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -96,7 +98,10 @@ export default function ManagerDashboard() {
   const navigate = useNavigate();
 
   const fetchEvents = async () => {
-    try { const r = await getEvents(); setEvents(r.data); }
+    try { 
+      const r = await getEvents(user?.id); 
+      setEvents(r.data); 
+    }
     catch { addToast('Failed to load events', 'error'); }
     finally { setLoading(false); }
   };

@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useSocket } from '../../context/SocketContext';
+import { useAuth } from '../../context/AuthContext';
 import { getEvents } from '../../utils/api';
 import AppLayout from '../../components/AppLayout';
 import Topbar from '../../components/Topbar';
 
 export default function VolunteersPage() {
+  const { user } = useAuth();
   const [events, setEvents] = useState([]);
   const { lastMessage } = useSocket();
-  const fetch = () => getEvents().then(r => setEvents(r.data)).catch(()=>{});
+  const fetch = () => getEvents(user?.id).then(r => setEvents(r.data)).catch(()=>{});
   useEffect(() => { fetch(); }, []);
   useEffect(() => { if (lastMessage) fetch(); }, [lastMessage]);
 

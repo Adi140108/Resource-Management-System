@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSocket } from '../../context/SocketContext';
 import { useToast } from '../../context/ToastContext';
+import { useAuth } from '../../context/AuthContext';
 import { getEvents } from '../../utils/api';
 import AppLayout from '../../components/AppLayout';
 import Topbar from '../../components/Topbar';
@@ -13,19 +14,27 @@ function taskStatus(t) {
 }
 
 export default function LiveMonitor() {
+  const { user } = useAuth();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const { lastMessage, connected } = useSocket();
   const { addToast } = useToast();
 
   const fetch = async () => {
-    try { const r = await getEvents(); setEvents(r.data); }
+    try { 
+      const r = await getEvents(user?.id); 
+      setEvents(r.data); 
+    }
     catch { addToast('Failed to load', 'error'); }
     finally { setLoading(false); }
   };
 
-  useEffect(() => { fetch(); }, []);
-  useEffect(() => { if (lastMessage) fetch(); }, [lastMessage]);
+  useEffect(() => { 
+    fetch(); 
+    // Polling fallback since WebSockets are disabled on Firebase Functions
+    const interval = setInterval(fetch, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   const allTasks = events.flatMap(e => e.tasks.map(t => ({ ...t, eventName: e.name })));
   const full = allTasks.filter(t => taskStatus(t) === 'full').length;

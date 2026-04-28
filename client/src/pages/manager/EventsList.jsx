@@ -1,19 +1,21 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getEvents } from '../../utils/api';
+import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import AppLayout from '../../components/AppLayout';
 import Topbar from '../../components/Topbar';
 import { Icons } from '../../components/Icons';
 
 export default function EventsList() {
+  const { user } = useAuth();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const { addToast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
-    getEvents()
+    getEvents(user?.id)
       .then(r => setEvents(r.data))
       .catch(() => addToast('Failed to load events', 'error'))
       .finally(() => setLoading(false));
